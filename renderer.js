@@ -171,3 +171,20 @@ $("html").on("click", '#send-message-btn', (eventInfo) => {
         $chatInput.val('');
     }
 });
+
+//Send on enter press
+$("html").on("keydown", '#chat-input', (eventInfo) => {
+  if (eventInfo.which == 13) {
+    eventInfo.preventDefault();
+    const $chatInput = $('#chat-input');
+    if($chatInput.val()!=="") {
+        socket.emit("chatMessage", {
+            className: session.class,
+            username: session.name,
+            message: $chatInput.val()
+        });
+        $chatInput.val('');
+    }
+    return false;
+  }
+});
