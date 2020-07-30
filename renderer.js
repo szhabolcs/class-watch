@@ -37,10 +37,16 @@ function scrollChatIntoView(){
   $("#chat").animate({ scrollTop: $('#chat').prop("scrollHeight")}, 1000);
 }
 
+//todo remove when finished
 socket.on('test', (msg) => console.log(msg));
 
-socket.on('loginSuccess', () => {
+socket.on('joinSuccess', () => {
     $("body").load("student.html");
+});
+
+socket.on('createSuccess', () => {
+    //todo load teacher dashboard here
+    //$("body").load("student.html");
 });
 
 socket.on('errorMsg', (errorMessage) => {
