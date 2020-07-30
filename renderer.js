@@ -51,7 +51,6 @@ function connect() {
  * Disconnects from the server
  */
 function disconnect() {
-    socket.emit('leave', session);
     socket.disconnect();
 }
 
@@ -62,27 +61,35 @@ function bindSocketListeners(socket) {
     //todo remove when finished
     socket.on('test', (msg) => console.log(msg));
 
-socket.on('joinSuccess', (eventInfo) => {
-    session.joined = true;
-    $("body").load("student.html",() => {
-      $("#name").text(eventInfo.name);
-      $("#class-name").text(eventInfo.className);
+    socket.on('joinSuccess', (eventInfo) => {
+        session.joined = true;
+        $("body").load("student.html", () => {
+            $("#name").text(eventInfo.name);
+            $("#class-name").text(eventInfo.className);
+        });
     });
-});
 
-socket.on('createSuccess', (eventInfo) => {
-    session.joined = true;
-    console.log("Class created!");
-    $("body").load("teacher.html",() => {
-      $("#name").text(eventInfo.name);
-      $("#class-name").text(eventInfo.className);
+    socket.on('createSuccess', (eventInfo) => {
+        session.joined = true;
+        console.log("Class created!");
+        $("body").load("teacher.html", () => {
+            $("#name").text(eventInfo.name);
+            $("#class-name").text(eventInfo.className);
+        });
     });
-});
 
     socket.on('errorMsg', (errorMessage) => {
         disconnect();
         showModal(errorMessage);
     });
+
+    socket.on('teacherLeft', ()=>{
+        $("body").load("main-menu.html", ()=>{
+            showModal(MSG_TEACHER_LEFT);
+        });
+        disconnect();
+
+    })
 }
 
 //Event listeners
