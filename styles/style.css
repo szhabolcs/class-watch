@@ -65,7 +65,64 @@ body{
     background-color: #17a2b8;
 }
 #leave-class{
-    width: fit-content;
+    width: 140px;
     background: var(--danger);
     padding: 5px 10px;
+    text-align: center;
+}
+#class-display-name{
+    text-align: center;
+    margin-top: 10px;
+}
+#chat{
+    height: calc(100% - 50px);
+    background: var(--gray);
+    padding: 20px;
+    overflow: auto;
+}
+#chat-container{
+    height: 80vh;
+    width: 90vw;
+    margin: 0 auto;
+    transform: translate(0px, calc(((100vh - 60px) - 80vh )/2));
+}
+#chat-input-group{
+    width: 100%;
+    background-color: var(--primary);
+}
+#chat-input{
+    width: calc(100% - 50px);
+    height: 50px;
+}
+#send-message-btn{
+    height: 30px;
+    width: 30px;
+    transform: translate(0px, -3px);
+    margin-left: 6px;
+    cursor: pointer;
+}
+.message-group{
+    width: 100%;
+    display: inline-block;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+.from{
+    font-weight: 700;
+}
+.teacher{
+    color: var(--warning);
+}
+.message{
+    overflow-wrap: anywhere;
+}
+#nav-center-text{
+    font-size: 1.3em;
+}
+.hightlight {
+    color: #02424a;
+    font-weight: 500;
+}
+#leave-class-approve-btn{
+    background-color: var(--cyan);
 }

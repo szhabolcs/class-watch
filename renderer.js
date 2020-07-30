@@ -31,13 +31,30 @@ const socket = io("http://gpcnet.go.ro:3000/");
     }
   }
 
-$("#enter-class").click(function(){
+  /**
+   * Scrolls the chat into view
+   */
+  function scrollChatIntoView(){
+    $("#chat").animate({ scrollTop: $('#chat').prop("scrollHeight")}, 1000);
+  }
+
+  //Event listeners
+
+$("html").on("click","#enter-class",()=>{
     checkInputs(()=>{
       $("body").load("student.html");
       //TODO: enter class
     });
 });
 
-$("#create-class").click(function(){
+$("html").on("click","#create-class",()=>{
     //TODO: new class
+});
+
+$("html").on("click","#leave-class",()=>{
+  showModal("Are you sure you want to leave?");
+});
+
+$("html").on("click","#leave-class-approve-btn",()=>{
+  $("body").load("main-menu.html");
 });
