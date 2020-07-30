@@ -40,7 +40,8 @@ function scrollChatIntoView(){
 //todo remove when finished
 socket.on('test', (msg) => console.log(msg));
 
-socket.on('joinSuccess', () => {
+socket.on('joinSuccess', (eventInfo) => {
+    console.log(eventInfo);
     $("body").load("student.html");
 });
 
