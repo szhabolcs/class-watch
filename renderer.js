@@ -13,6 +13,10 @@ const socket = io("http://gpcnet.go.ro:3000/");
     console.log(stdout.split("\n"));
   });
 
-$("#click").click(function(){
-    $(this).hide();
+$("#enter-class").click(function(){
+    //TODO: enter class
+});
+
+$("#create-class").click(function(){
+    //TODO: new class
 });
