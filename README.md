@@ -1,5 +1,5 @@
 # class-watch
-This is the infoeducatie 2020 hackathlon repo!
+This is the infoeducatie 2020 hackathon repo!
 
 Used:
 * https://github.com/electron/electron-quick-start
