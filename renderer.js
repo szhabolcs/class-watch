@@ -1,12 +1,13 @@
-// This file is required by the index.html file and will
-// be executed in the renderer process for that window.
-// No Node.js APIs are available in this process because
-// `nodeIntegration` is turned off. Use `preload.js` to
-// selectively enable features needed in the rendering
-// process.
+/** This file is required by the index.html file and will
+ * be executed in the renderer process for that window.
+ * No Node.js APIs are available in this process because
+ * `nodeIntegration` is turned off. Use `preload.js` to
+ * selectively enable features needed in the rendering
+ * process.
+ **/
 const io = require("socket.io-client");
-
-const socket = io("http://gpcnet.go.ro:3000/");
+let socket;
+let session;
 
 const {exec} = require('child_process');
 exec('gps | where {$_.MainWindowHandle -ne 0 } | select Description', {'shell': 'powershell.exe'}, (error, stdout, stderr) => {
@@ -31,16 +32,38 @@ function checkInputs(callback) {
 }
 
 /**
-   * Scrolls the chat into view
-   */
-function scrollChatIntoView(){
-  $("#chat").animate({ scrollTop: $('#chat').prop("scrollHeight")}, 1000);
+ * Scrolls the chat into view
+ */
+function scrollChatIntoView() {
+    $("#chat").animate({scrollTop: $('#chat').prop("scrollHeight")}, 1000);
 }
 
-//todo remove when finished
-socket.on('test', (msg) => console.log(msg));
+/**
+ * Connects to the server
+ */
+function connect() {
+    socket = io("http://gpcnet.go.ro:3000/");
+    bindSocketListeners(socket);
+    return socket;
+}
+
+/**
+ * Disconnects from the server
+ */
+function disconnect() {
+    socket.emit('leave', session);
+    socket.disconnect();
+}
+
+/**
+ * Binds the event listeners needed for the communication
+ */
+function bindSocketListeners(socket) {
+    //todo remove when finished
+    socket.on('test', (msg) => console.log(msg));
 
 socket.on('joinSuccess', (eventInfo) => {
+    session.joined = true;
     $("body").load("student.html",() => {
       $("#name").text(eventInfo.name);
       $("#class-name").text(eventInfo.className);
@@ -48,6 +71,7 @@ socket.on('joinSuccess', (eventInfo) => {
 });
 
 socket.on('createSuccess', (eventInfo) => {
+    session.joined = true;
     console.log("Class created!");
     $("body").load("teacher.html",() => {
       $("#name").text(eventInfo.name);
@@ -55,17 +79,25 @@ socket.on('createSuccess', (eventInfo) => {
     });
 });
 
-socket.on('errorMsg', (errorMessage) => {
-    showModal(errorMessage);
-});
+    socket.on('errorMsg', (errorMessage) => {
+        disconnect();
+        showModal(errorMessage);
+    });
+}
 
 //Event listeners
 
-$("html").on("click","#enter-class",(eventInfo)=>{
+$("html").on("click", "#enter-class", (eventInfo) => {
     eventInfo.preventDefault();
     checkInputs(() => {
         const studentName = $("#user-name").val();
         const className = $("#class-name").val();
+        session = {
+            name: studentName,
+            class: className,
+            joined: false
+        }
+        socket = connect();
         socket.emit('joinClass', {
             studentName: studentName,
             className: className
@@ -73,11 +105,17 @@ $("html").on("click","#enter-class",(eventInfo)=>{
     });
 });
 
-$("html").on("click","#create-class",(eventInfo)=>{
+$("html").on("click", "#create-class", (eventInfo) => {
     eventInfo.preventDefault();
-    checkInputs(()=> {
+    checkInputs(() => {
         const teacherName = $("#user-name").val();
         const className = $("#class-name").val();
+        session = {
+            name: teacherName,
+            class: className,
+            joined: false
+        }
+        socket = connect();
         socket.emit('createClass', {
             teacherName: teacherName,
             className: className
@@ -85,10 +123,11 @@ $("html").on("click","#create-class",(eventInfo)=>{
     });
 });
 
-$("html").on("click","#leave-class",()=>{
-  showModal("Are you sure you want to leave?");
+$("html").on("click", "#leave-class", () => {
+    showModal(MSG_LEAVE);
 });
 
-$("html").on("click","#leave-class-approve-btn",()=>{
-  $("body").load("main-menu.html");
+$("html").on("click", "#leave-class-approve-btn", () => {
+    $("body").load("main-menu.html");
+    disconnect();
 });
