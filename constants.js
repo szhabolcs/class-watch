@@ -1,0 +1,1 @@
+const MSG_FILL_FIELDS = "Please fill in all the fields.";
