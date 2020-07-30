@@ -20,7 +20,7 @@
     "electron": "^9.1.2"
   },
   "dependencies": {
-    "socket.io": "^2.3.0",
-    "tasklist": "^4.0.1"
+    "jquery": "^3.5.1",
+    "socket.io": "^2.3.0"
   }
 }
