@@ -41,13 +41,18 @@ function scrollChatIntoView(){
 socket.on('test', (msg) => console.log(msg));
 
 socket.on('joinSuccess', (eventInfo) => {
-    console.log(eventInfo);
-    $("body").load("student.html");
+    $("body").load("student.html",() => {
+      $("#name").text(eventInfo.name);
+      $("#class-name").text(eventInfo.className);
+    });
 });
 
-socket.on('createSuccess', () => {
-    //todo load teacher dashboard here
-    //$("body").load("student.html");
+socket.on('createSuccess', (eventInfo) => {
+    console.log("Class created!");
+    $("body").load("teacher.html",() => {
+      $("#name").text(eventInfo.name);
+      $("#class-name").text(eventInfo.className);
+    });
 });
 
 socket.on('errorMsg', (errorMessage) => {
