@@ -25,6 +25,11 @@ io.on('connection', (socket) => {
             };
             classes[className].students = [];
             socket.join(eventInfo.className);
+            socket.emit("createSuccess",
+                {
+                    name: eventInfo.teacherName,
+                    className: className
+                });
         }
     });
 
@@ -39,18 +44,34 @@ io.on('connection', (socket) => {
                 sendError(socket, cts.MSG_STUDENT_EXISTS)
             } else {
                 const className = eventInfo.className;
-                classes[className].students.push({
-                    id: socket.id,
+                classes[className].students[socket.id] = {
                     name: eventInfo.studentName
-                });
+                };
                 socket.join(className);
-                socket.emit('test', "Student joined");
+                socket.emit('joinSuccess', {
+                    name: studentName,
+                    className: className
+                });
             }
         } else {
             sendError(socket, cts.MSG_UNKNOWN_CLASS);
         }
     });
 
+    socket.on('leave', (session) => {
+
+        if (session.joined === true) {
+            const className = session.class;
+            const clientName = session.name;
+            if (classes[className].teacherName === clientName)
+                delete classes[className];
+            else delete classes[className].students[clientName];
+        }
+    });
+
+    socket.on('disconnecting', (reason) => {
+        console.log("Disconnected");
+    });
+
     socket.to("asd").emit('message', "Hello World");
 });
-
