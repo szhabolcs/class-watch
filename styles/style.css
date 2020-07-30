@@ -1,4 +1,9 @@
-.login-container{
+body{
+    background-color: var(--gray-dark);
+    color: white;
+}
+
+.class-container{
     margin-top: 5%;
     margin-bottom: 5%;
 }
@@ -11,31 +16,56 @@
 .main-form h3{
     text-align: center;
 }
-.login-container form{
+.class-container form{
     padding: 10%;
 }
-.btnSubmit{
-    width: 49%;
+.custom-btn{
+    width: 45%;
     border-radius: 1rem;
     padding: 1.5%;
     border: none;
     cursor: pointer;
 }
-.main-form .btnSubmit{
+.main-form .custom-btn{
     font-weight: 600;
     color: #fff;
-    background-color: var(--dark);
 }
-.main-form .ForgetPwd{
-    color: #0062cc;
-    font-weight: 600;
-    text-decoration: none;
+#tip{
+    text-align: center;
 }
-body{
-    background-color: var(--gray-dark);
-    color: white;
+#enter-class{
+    background-color: #343a40;
+}
+#create-class{
+    background-color: #3F51B5;
+}
+#buttons{
+    text-align: center;
 }
 #app-description{
-    margin: 50px;
     text-align: center;
+    margin-top: 50px;
+}
+#app-description h1{
+    text-align: center;
+}
+#app-description svg{
+    width: 50px;
+    height: 50px;
+    fill: white;
+}
+.modal-content{
+    background-color: var(--dark);
+}
+.navbar-brand svg{
+    height: 30px;
+    width: 30px;
+}
+.navbar{
+    background-color: #17a2b8;
+}
+#leave-class{
+    width: fit-content;
+    background: var(--danger);
+    padding: 5px 10px;
 }
