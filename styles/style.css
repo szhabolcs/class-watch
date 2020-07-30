@@ -83,6 +83,7 @@ body{
 #chat-container{
     height: 80vh;
     width: 90vw;
+    max-width: 100%; /* Fix for teacher page */
     margin: 0 auto;
     transform: translate(0px, calc(((100vh - 60px) - 80vh )/2));
 }
@@ -125,4 +126,41 @@ body{
 }
 #leave-class-approve-btn{
     background-color: var(--cyan);
+}
+.tab-content{
+    height: 97%;
+}
+a{
+    color: #00bcd4;
+}
+a:hover {
+    color: #00707e !important;
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link{
+    background-color: #00bcd4;
+}
+.info-btn{
+    height: 1.3em;
+    transform: translate(0px, 1px);
+    float: right;
+    cursor: pointer;
+}
+.ping-btn{
+    padding-left: 10px;
+    padding-right: 10px;
+    float: right;
+    cursor: pointer;
+}
+.student-row{
+    padding: 10px;
+    border: 2px solid;
+    border-radius: .25rem;
+    margin: 10px;
+}
+#class-body{
+    overflow: auto;
+    height: 80vh;
+}
+.student-row:hover{
+    background-color: #009688;
 }

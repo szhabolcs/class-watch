@@ -6,32 +6,41 @@
     <span id="nav-center-text">Hello <span class="hightlight" id="name"></span>! You're connected to <span class="hightlight" id="class-name">CLASSNAME</span></span>
     <span id="leave-class" class="custom-btn">Leave class</span>
 </nav>
-<div id="chat-container">
-    
-    <ul class="nav nav-pills mb-3" id="tab" role="tablist">
-        <li class="nav-item">
-          <a class="nav-link active" id="chat-tab" data-toggle="pill" href="#chat" role="tab" aria-controls="chat" aria-selected="true">Chat</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="class-tab" data-toggle="pill" href="#class" role="tab" aria-controls="class" aria-selected="false">Class</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="contact-tab" data-toggle="pill" href="#settings" role="tab" aria-controls="class" aria-selected="false">Class settings</a>
-        </li>
-    </ul>
-    <div class="tab-content" id="tabContent">
-        <div class="tab-pane fade show active" id="chat" role="tabpanel" aria-labelledby="chat-tab">
-            <div id="chat">
-            </div>
-            <div id="chat-input-group">
-                <input id="chat-input" type="text" placeholder="Type your text here">
-                <svg id="send-message-btn" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="paper-plane" class="svg-inline--fa fa-paper-plane fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"></path></svg>
+
+<div class="row" style="margin-top: 30px;margin-right: 0px;margin-left: 0px;">
+    <div class="col-3">
+      <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <a class="nav-link active show" id="chat-tab" data-toggle="pill" href="#chat-body" role="tab" aria-controls="chat-body" aria-selected="true">Chat</a>
+        <a class="nav-link" id="class-tab" data-toggle="pill" href="#class-body" role="tab" aria-controls="class-body" aria-selected="false">Class</a>
+        <a class="nav-link" id="settings-tab" data-toggle="pill" href="#settings-body" role="tab" aria-controls="settings-body" aria-selected="false">Class settings</a>
+      </div>
+    </div>
+    <div class="col-9">
+      <div class="tab-content" id="v-pills-tabContent">
+        <div class="tab-pane fade active show" id="chat-body" role="tabpanel" aria-labelledby="chat-tab">
+            <div id="chat-container" style="transform: none;">
+                <div id="chat">
+                    
+                </div>
+                <div id="chat-input-group">
+                    <input id="chat-input" type="text" placeholder="Type your text here">
+                    <svg id="send-message-btn" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="paper-plane" class="svg-inline--fa fa-paper-plane fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"></path></svg>
+                </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="class" role="tabpanel" aria-labelledby="class-tab">...</div>
-        <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="contact-tab">...</div>
+        <div class="tab-pane fade" id="class-body" role="tabpanel" aria-labelledby="class-tab">
+          <div class="student-row">
+              <span class="student-name">NAME</span>
+              <svg class="info-btn" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"></path></svg></span>
+              <span class="ping-btn">PING</span>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="settings-body" role="tabpanel" aria-labelledby="settings-tab">
+          
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 <!-- Warning modal -->
 <div class="modal fade" id="warning-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
