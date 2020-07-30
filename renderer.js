@@ -109,7 +109,11 @@ function bindSocketListeners(socket) {
           '<span class="ping-btn">PING</span>'+
         '</div>'
       );
-  });
+    });
+
+    socket.on('studentLeft', (eventInfo) => {
+      $("#"+eventInfo.id).remove();
+    });
 }
 
 //Event listeners
