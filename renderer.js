@@ -83,13 +83,22 @@ function bindSocketListeners(socket) {
         showModal(errorMessage);
     });
 
-    socket.on('teacherLeft', ()=>{
-        $("body").load("main-menu.html", ()=>{
+    socket.on('teacherLeft', () => {
+        $("body").load("main-menu.html", () => {
             showModal(MSG_TEACHER_LEFT);
         });
         disconnect();
+    });
 
-    })
+    socket.on('chatMessage', (eventInfo) => {
+        const $message = $(" <span class='message-group'>" +
+            "<span class='from'>" + eventInfo.username + "</span>: " +
+            "<span id='message'>" + eventInfo.message + "</span>" +
+            "</span>");
+        if (eventInfo.hasOwnProperty('teacher'))
+            $message.addClass('teacher');
+        $('#chat').append($message);
+    });
 }
 
 //Event listeners
@@ -137,4 +146,17 @@ $("html").on("click", "#leave-class", () => {
 $("html").on("click", "#leave-class-approve-btn", () => {
     $("body").load("main-menu.html");
     disconnect();
+});
+
+$("html").on("click", '#send-message-btn', (eventInfo) => {
+    eventInfo.preventDefault();
+    const $chatInput = $('#chat-input');
+    if($chatInput.val()!=="") {
+        socket.emit("chatMessage", {
+            className: session.class,
+            username: session.name,
+            message: $chatInput.val()
+        });
+        $chatInput.val('');
+    }
 });

@@ -12,7 +12,6 @@ function sendError(socket, errorMessage) {
 
 io.on('connection', (socket) => {
 
-    console.log("connected", socket.id);
     socket.on('createClass', (eventInfo) => {
         console.log("class created");
         const className = eventInfo.className;
@@ -52,25 +51,40 @@ io.on('connection', (socket) => {
                     name: studentName,
                     className: className
                 });
+                socket.to(className).emit('studentJoined', {
+                    name: studentName,
+                    className: className,
+                    id: socket.id
+                });
             }
         } else {
             sendError(socket, cts.MSG_UNKNOWN_CLASS);
         }
     });
 
-    socket.on('leave', (session) => {
-
-        if (session.joined === true) {
-            const className = session.class;
-            const clientName = session.name;
-            if (classes[className].teacherName === clientName)
-                delete classes[className];
-            else delete classes[className].students[clientName];
+    socket.on('chatMessage', (eventInfo) => {
+        const className = eventInfo.className;
+        if (classes[className].teacherName === eventInfo.username) {
+            eventInfo['teacher'] = true;
         }
+        socket.emit('chatMessage', eventInfo);
+        socket.to(className).emit('chatMessage', eventInfo);
     });
 
     socket.on('disconnecting', (reason) => {
-        console.log("Disconnected");
+        console.log("Disconnected" + socket.id);
+        for (let i in classes) {
+            if (socket.id === classes[i].teacherId) {
+                delete classes[i];
+                socket.to(i).emit("teacherLeft");
+            } else if (classes[i].students.hasOwnProperty(socket.id)) {
+                socket.to(i).emit("studentLeft", {
+                    name: classes[i].students[socket.id].name,
+                    id: socket.id
+                });
+                delete classes[i].students[socket.id];
+            }
+        }
     });
 
     socket.to("asd").emit('message', "Hello World");
