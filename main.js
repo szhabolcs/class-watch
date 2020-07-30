@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
+const tasklist = require('tasklist');
 
 function createWindow () {
   // Create the browser window.
@@ -24,6 +25,22 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow()
+
+  var tasklist = require('tasklist');
+
+  tasklist().then((tasks)=>{
+    var appList = tasks.filter(function(task) {
+      if(!task.imageName.includes("System"))
+      return task;
+    }).map(function(task) {
+      return {
+        id   : task.pid,
+        name : task.imageName,
+      };
+    });
+
+    console.log(appList);
+  });
   
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
