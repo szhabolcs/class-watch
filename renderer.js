@@ -23,10 +23,10 @@ function isWindowsProcess(processName){
 
         case "WinStore.App":
             return true;
-            
+
         case "SystemSettings":
             return true;
-            
+
         default:
             return false;
     }
@@ -63,7 +63,7 @@ function showModal(message) {
  */
 function fetchStudentInfo(id, className) {
     let studentInfo;
-    socket.to(className).emit("fetchStudentInfo", {id: id, className: className});
+    socket.emit("fetchStudentInfo", {id: id, className: className});
 }
 
 /**
@@ -175,8 +175,29 @@ function bindSocketListeners(socket) {
         $("#" + eventInfo.id).remove();
     });
 
-    socket.on("appInfoReceived", (eventInfo) => {
+    socket.on('fetchStudentInfo', (eventInfo) => {
+        getStudentInfo();
+    })
 
+
+    socket.on("appInfoReceived", (eventInfo) => {
+        let emptyString = appOutput[0][0];
+        $("#used-apps").empty();
+        for(let i = 0; i < appOutput.length-1; i++){
+            if(appOutput[i][0] !== emptyString && !isWindowsProcess(appOutput[i][0])){
+                if(appOutput[i][1] !== emptyString){
+                    $("#used-apps").append(
+                        '<div class="app-row">'+appOutput[i][1]+'</div>'
+                    );
+                }
+                else{
+                    $("#used-apps").append(
+                        '<div class="app-row">'+appOutput[i][0]+'</div>'
+                    );
+                }
+
+            }
+        }
     });
 }
 
@@ -260,7 +281,7 @@ $("html").on("keydown", '#chat-input', (eventInfo) => {
 $("html").on("click", '.info-btn', (eventInfo) => {
     /*let id = $(eventInfo.currentTarget).attr('id');
     let name = $(eventInfo.currentTarget.parentElement).children(".student-name").text();*/
-    const id = session.id;
+    const id = $(eventInfo.currentTarget.parentElement).attr('id');
     const name = session.name;
     const className = session.class;
     showStudentInfo(id, name, className);
@@ -268,21 +289,7 @@ $("html").on("click", '.info-btn', (eventInfo) => {
 
 $('html').on("appLoadFinished", (eventInfo) => {
 
-    let emptyString = appOutput[0][0];
-    $("#used-apps").empty();
-    for(let i = 0; i < appOutput.length-1; i++){
-        if(appOutput[i][0] !== emptyString && !isWindowsProcess(appOutput[i][0])){
-            if(appOutput[i][1] !== emptyString){
-                $("#used-apps").append(
-                    '<div class="app-row">'+appOutput[i][1]+'</div>'
-                );
-            }
-            else{
-                $("#used-apps").append(
-                    '<div class="app-row">'+appOutput[i][0]+'</div>'
-                );
-            }
-            
-        }
-    }
+
+    appOutput['class'] = session.class;
+    socket.emit('appInfoReceived', appOutput);
 });
