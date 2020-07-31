@@ -3,7 +3,7 @@
     <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chalkboard-teacher" class="svg-inline--fa fa-chalkboard-teacher fa-w-20" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M208 352c-2.39 0-4.78.35-7.06 1.09C187.98 357.3 174.35 360 160 360c-14.35 0-27.98-2.7-40.95-6.91-2.28-.74-4.66-1.09-7.05-1.09C49.94 352-.33 402.48 0 464.62.14 490.88 21.73 512 48 512h224c26.27 0 47.86-21.12 48-47.38.33-62.14-49.94-112.62-112-112.62zm-48-32c53.02 0 96-42.98 96-96s-42.98-96-96-96-96 42.98-96 96 42.98 96 96 96zM592 0H208c-26.47 0-48 22.25-48 49.59V96c23.42 0 45.1 6.78 64 17.8V64h352v288h-64v-64H384v64h-76.24c19.1 16.69 33.12 38.73 39.69 64H592c26.47 0 48-22.25 48-49.59V49.59C640 22.25 618.47 0 592 0z"></path></svg>
     Class Watch
     </a>
-    <span id="nav-center-text">Hello <span class="hightlight" id="name"></span>! You're connected to <span class="hightlight" id="class-name">CLASSNAME</span></span>
+    <span id="nav-center-text">Hello <span class="hightlight" id="name"></span>! You're connected to <span class="hightlight" id="class-name"></span></span>
     <span id="leave-class" class="custom-btn">Leave class</span>
 </nav>
 
@@ -23,7 +23,7 @@
                     
                 </div>
                 <div id="chat-input-group">
-                    <input id="chat-input" type="text" placeholder="Type your text here">
+                    <input id="chat-input" type="text" placeholder="Type your message here">
                     <svg id="send-message-btn" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="paper-plane" class="svg-inline--fa fa-paper-plane fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"></path></svg>
                 </div>
             </div>
@@ -32,16 +32,30 @@
           <div class="student-row">
             <span class="student-name">NAME</span>
             <svg class="info-btn" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"></path></svg></span>
-            <span class="ping-btn">PING</span>
+            <span class="ping-btn row-btn bg-info">PING</span>
           </div>
           <div class="student-row">
             <span class="student-name">NAME2</span>
             <svg class="info-btn" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="info-circle" class="svg-inline--fa fa-info-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"></path></svg></span>
-            <span class="ping-btn">PING</span>
+            <span class="ping-btn row-btn bg-info">PING</span>
           </div>
         </div>
         <div class="tab-pane fade" id="settings-body" role="tabpanel" aria-labelledby="settings-tab">
-          
+          <div class="site-tab">
+            <div style="position: sticky;">
+              <span style="font-size: 1.5rem;">Blocked websites:</span>
+            </div>
+            <div id="blocked-sites-container" style="height: 100%;overflow: auto;padding-bottom: 50px;">
+              <div class="site-row">
+                SITENAME
+                <span style="float: right;" class="row-btn bg-danger">REMOVE</span>
+              </div>
+            </div>
+          </div>
+          <div id="site-input-group">
+            <input id="site-input" type="text" placeholder="Type the web adress you want to block here">
+            <svg id="site-block-btn" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="paper-plane" class="svg-inline--fa fa-paper-plane fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"></path></svg>
+          </div>
         </div>
       </div>
     </div>

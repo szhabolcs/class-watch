@@ -140,14 +140,14 @@ a:hover {
     background-color: #00bcd4;
 }
 .info-btn{
-    height: 1.3em;
-    transform: translate(0px, 1px);
+    height: 30px;
+    transform: translate(0px, -3px);
     float: right;
     cursor: pointer;
 }
 .ping-btn{
-    padding-left: 10px;
-    padding-right: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
     float: right;
     cursor: pointer;
 }
@@ -162,7 +162,7 @@ a:hover {
     height: 80vh;
 }
 .student-row:hover{
-    background-color: #009688;
+    background-color: #607D8B;
 }
 #student-modal  .modal-dialog{
     max-width: 90vw;
@@ -170,9 +170,38 @@ a:hover {
 #student-modal .modal-dialog .modal-content{
     height: 90vh;
 }
-.app-row{
+.app-row, .site-row{
     padding: 10px;
     border: 2px solid;
     border-radius: .25rem;
     margin: 10px;
+}
+#site-block-btn{
+    height: 30px;
+    width: 30px;
+    transform: translate(0px, -3px);
+    margin-left: 6px;
+    cursor: pointer;
+}
+#site-input{
+    width: calc(100% - 50px);
+    height: 50px;
+}
+#site-input-group{
+    width: 100%;
+    background-color: var(--primary);
+}
+#settings-body{
+    height: 80vh;
+}
+.site-tab{
+    height: 75%;
+    overflow: hidden;
+    height: calc(100% - 50px);
+}
+.row-btn {
+    padding: 5px 20px;
+    border-radius: 30px;
+    transform: translate(0px, -5px);
+    cursor: pointer;
 }
