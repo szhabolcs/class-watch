@@ -1,8 +1,10 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
-const path = require('path')
+const {app, BrowserWindow} = require('electron');
+const path = require('path');
+const fs = require('fs');
 
-
+const HOSTS_PATH = "C:/Windows/System32/drivers/etc/hosts";
+const BACKUP_HOSTS_PATH = "C:/Windows/System32/drivers/etc/hosts.old";
 
 function createWindow () {
   // Create the browser window.
@@ -39,6 +41,7 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', function () {
+  fs.copyFile(BACKUP_HOSTS_PATH, HOSTS_PATH, (err) => {});
   if (process.platform !== 'darwin') app.quit()
 })
 

@@ -6,9 +6,41 @@
  * process.
  **/
 const io = require("socket.io-client");
+const fs = require('fs');
 let socket;
 let session;
 let appOutput = [];
+let studentId;
+let hostsValue;
+
+fs.copyFile(HOSTS_PATH, BACKUP_HOSTS_PATH, (err) => console.log(err));
+
+function isWindowsProcess(processName) {
+    if (processName.startsWith("WindowsInternal"))
+        return true;
+    switch (processName) {
+        case "ApplicationFrameHost":
+            return true;
+
+        case "TextInputHost":
+            return true;
+
+        case "Video.UI":
+            return true;
+
+        case "WinStore.App":
+            return true;
+
+        case "SystemSettings":
+            return true;
+
+        case "dwm":
+            return true;
+
+        default:
+            return false;
+    }
+}
 
 function getStudentInfo() {
     const {exec} = require('child_process');
@@ -24,7 +56,7 @@ function getStudentInfo() {
             tempString = temp.filter(item => item !== "").join(" ");
             appOutput[i].push(tempString);
         }
-        $('html').trigger('appLoadFinished', appOutput);
+        $('html').trigger('appLoadFinished');
     });
 }
 
@@ -109,7 +141,6 @@ function bindSocketListeners(socket) {
 
     socket.on('createSuccess', (eventInfo) => {
         session.joined = true;
-        console.log("Class created!");
         $("body").load("teacher.html", () => {
             $("#name").text(eventInfo.name);
             $("#class-name").text(eventInfo.className);
@@ -122,6 +153,8 @@ function bindSocketListeners(socket) {
     });
 
     socket.on('teacherLeft', () => {
+        fs.copyFile(BACKUP_HOSTS_PATH, HOSTS_PATH, (err) => {
+        });
         $("body").load("main-menu.html", () => {
             showModal(MSG_TEACHER_LEFT);
         });
@@ -153,8 +186,55 @@ function bindSocketListeners(socket) {
         $("#" + eventInfo.id).remove();
     });
 
-    socket.on("appInfoReceived", (eventInfo) => {
+    socket.on('fetchStudentInfo', (eventInfo) => {
+        getStudentInfo();
+    })
 
+
+    socket.on("appInfoReceived", (eventInfo) => {
+        let emptyString = eventInfo[0][0];
+        $("#used-apps").empty();
+        for (let i = 0; i < eventInfo.length - 1; i++) {
+            if (eventInfo[i][0] !== emptyString && !isWindowsProcess(eventInfo[i][0])) {
+                if (eventInfo[i][1] !== emptyString) {
+                    $("#used-apps").append(
+                        '<div class="app-row">' +
+                        eventInfo[i][1] +
+                        '<span id="app-close-btn" data-app-id = ' + eventInfo[i][0] + ' class="bg-danger row-btn">Close</span>' +
+                        '</div>'
+                    );
+                } else {
+                    $("#used-apps").append(
+                        '<div class="app-row">' +
+                        eventInfo[i][0] +
+                        '<span id="app-close-btn" data-app-id = ' + eventInfo[i][0] + ' class="bg-danger row-btn">Close</span>' +
+                        '</div>'
+                    );
+                }
+
+            }
+        }
+    });
+
+    socket.on('closeApp', (eventInfo) => {
+        const {exec} = require('child_process');
+        exec('taskkill /im ' + eventInfo.appName + '.exe', {'shell': 'powershell.exe'});
+    });
+    socket.on('blockWebsite', (eventInfo) => {
+        const {exec} = require('child_process');
+        fs.appendFile(HOSTS_PATH,  '\n', () => console.log("blocked"));
+        fs.appendFile(HOSTS_PATH, "0.0.0.0 " + eventInfo.domain + '\n', () => console.log("blocked"));
+        fs.appendFile(HOSTS_PATH, "0.0.0.0 www." + eventInfo.domain, () => console.log("blocked"));
+    });
+    socket.on('allowWebsite', (eventInfo) => {
+        const {exec} = require('child_process');
+        fs.readFile(HOSTS_PATH, 'utf-8', (err, data) => {
+            hostsValue = {
+                data: data,
+                website: eventInfo.domain
+            };
+            $('html').trigger('hostsLoaded');
+        });
     });
 }
 
@@ -197,11 +277,15 @@ $("html").on("click", "#create-class", (eventInfo) => {
 });
 
 $("html").on("click", "#leave-class", () => {
+
     showModal(MSG_LEAVE);
 });
 
 $("html").on("click", "#leave-class-approve-btn", () => {
+    fs.copyFile(BACKUP_HOSTS_PATH, HOSTS_PATH, (err) => {
+    });
     $("body").load("main-menu.html");
+
     disconnect();
 });
 
@@ -236,14 +320,81 @@ $("html").on("keydown", '#chat-input', (eventInfo) => {
 });
 
 $("html").on("click", '.info-btn', (eventInfo) => {
-    /*let id = $(eventInfo.currentTarget).attr('id');
-    let name = $(eventInfo.currentTarget.parentElement).children(".student-name").text();*/
-    const id = session.id;
-    const name = session.name;
+    const id = $(eventInfo.currentTarget.parentElement).attr('id');
+    const name = $(eventInfo.currentTarget.parentElement).children(".student-name").text()
     const className = session.class;
+    studentId = id;
     showStudentInfo(id, name, className);
 });
 
 $('html').on("appLoadFinished", (eventInfo) => {
-    console.log(appOutput);
+    let data = {
+        className: session.class,
+        output: appOutput
+    };
+    socket.emit('appInfoReceived', data);
+});
+
+$('html').on("click", "#refresh", (eventInfo) => {
+
+    const id = studentId;
+    const name = session.name;
+    const className = session.class;
+    fetchStudentInfo(id, className);
+})
+
+$('html').on("click", "#app-close-btn", (eventInfo) => {
+    const $appId = $(eventInfo.currentTarget).attr("data-app-id");
+    socket.emit('closeApp', {id: studentId, appName: $appId});
+    $(eventInfo.currentTarget.parentElement).remove();
+});
+
+$('html').on('hostsLoaded', () => {
+    let data = hostsValue.data;
+    let domain = hostsValue.website;
+    data = data.replace("\n0.0.0.0 " + domain, "");
+    data = data.replace("\n0.0.0.0 www." + domain, "");
+    fs.writeFile(HOSTS_PATH, data, (err) => console.log(err));
+
+});
+
+$('html').on("click", "#site-block-btn", (eventInfo) => {
+    let $site = $("#site-input");
+    socket.emit('blockWebsite', {
+        domain: $site.val()
+    });
+    $("#blocked-sites-container").append(
+        '<div class="site-row">' +
+        $site.val() +
+        '<span style="float: right;" data-site=' + $site.val() + ' class="row-btn  bg-danger blocked-site-remove">REMOVE</span>' +
+        '</div>'
+    );
+
+    $site.val('');
+});
+//Send on enter press
+$("html").on("keydown", '#site-input', (eventInfo) => {
+    if (eventInfo.which == 13) {
+        eventInfo.preventDefault();
+        let $site = $("#site-input");
+        socket.emit('blockWebsite', {
+            domain: $site.val()
+        });
+        $("#blocked-sites-container").append(
+            '<div class="site-row">' +
+            $site.val() +
+            '<span style="float: right;" data-site=' + $site.val() + ' class="row-btn bg-danger blocked-site-remove">REMOVE</span>' +
+            '</div>'
+        );
+
+        $site.val('');
+        return false;
+    }
+});
+$('html').on("click", ".blocked-site-remove", (eventInfo) => {
+    $(eventInfo.currentTarget.parentElement).remove();
+    const $site = $(eventInfo.currentTarget).attr("data-site");
+    socket.emit('allowWebsite', {
+        domain: $site
+    });
 });
