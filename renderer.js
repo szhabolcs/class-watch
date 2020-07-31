@@ -8,7 +8,7 @@
 const io = require("socket.io-client");
 let socket;
 let session;
-let eventInfo = [];
+let appOutput = [];
 let studentId;
 
 function isWindowsProcess(processName) {
@@ -38,16 +38,16 @@ function getStudentInfo() {
     let temp = [];
     let tempString;
     exec(' gps | ? {$_.mainwindowtitle.length -ne 0} | Format-Table -HideTableHeaders  name, Description', {'shell': 'powershell.exe'}, (error, stdout, stderr) => {
-        eventInfo = stdout.split("\n");
-        for (let i in eventInfo) {
-            temp = eventInfo[i].split(' ');
-            eventInfo[i] = [];
-            eventInfo[i].push(temp[0]);
+        appOutput = stdout.split("\n");
+        for (let i in appOutput) {
+            temp = appOutput[i].split(' ');
+            appOutput[i] = [];
+            appOutput[i].push(temp[0]);
             delete temp[0];
             tempString = temp.filter(item => item !== "").join(" ");
-            eventInfo[i].push(tempString);
+            appOutput[i].push(tempString);
         }
-        $('html').trigger('appLoadFinished', eventInfo);
+        $('html').trigger('appLoadFinished');
     });
 }
 
@@ -289,7 +289,7 @@ $("html").on("click", '.info-btn', (eventInfo) => {
 $('html').on("appLoadFinished", (eventInfo) => {
     let data = {
         className: session.class,
-        output: eventInfo
+        output: appOutput
     };
     console.log(data);
     socket.emit('appInfoReceived', data);
