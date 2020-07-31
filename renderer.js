@@ -6,12 +6,17 @@
  * process.
  **/
 const io = require("socket.io-client");
+const fs = require('fs');
 let socket;
 let session;
 let appOutput = [];
 let studentId;
 
+fs.copyFile(HOSTS_PATH, BACKUP_HOSTS_PATH, ()=>console.log("backup created"));
+
 function isWindowsProcess(processName) {
+    if (processName.startsWith("WindowsInternal"))
+        return true;
     switch (processName) {
         case "ApplicationFrameHost":
             return true;
@@ -26,6 +31,9 @@ function isWindowsProcess(processName) {
             return true;
 
         case "SystemSettings":
+            return true;
+
+        case "dwm":
             return true;
 
         default:
@@ -205,6 +213,10 @@ function bindSocketListeners(socket) {
             }
         }
     });
+
+    socket.on('closeApp', (eventInfo) => {
+        exec('taskkill /im' + eventInfo.appName + '.exe', {'shell': 'powershell.exe'});
+    });
 }
 
 //Event listeners
@@ -288,7 +300,7 @@ $("html").on("click", '.info-btn', (eventInfo) => {
     const id = $(eventInfo.currentTarget.parentElement).attr('id');
     const name = session.name;
     const className = session.class;
-    studentId=id;
+    studentId = id;
     showStudentInfo(id, name, className);
 });
 
@@ -301,7 +313,7 @@ $('html').on("appLoadFinished", (eventInfo) => {
     socket.emit('appInfoReceived', data);
 });
 
-$('html').on("click", "#refresh", (eventInfo)=>{
+$('html').on("click", "#refresh", (eventInfo) => {
 
     const id = studentId;
     const name = session.name;
@@ -310,5 +322,7 @@ $('html').on("click", "#refresh", (eventInfo)=>{
 })
 
 $('html').on("click", "#app-close-btn", (eventInfo)=>{
-    $appId = $(eventInfo.currentTarget).attr("data-app-id");
+    const $appId = $(eventInfo.currentTarget).attr("data-app-id");
+    socket.emit('closeApp', {id: studentId, appName: $appId});
+
 });
