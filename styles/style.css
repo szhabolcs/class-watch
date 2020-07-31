@@ -164,3 +164,15 @@ a:hover {
 .student-row:hover{
     background-color: #009688;
 }
+#student-modal  .modal-dialog{
+    max-width: 90vw;
+}
+#student-modal .modal-dialog .modal-content{
+    height: 90vh;
+}
+.app-row{
+    padding: 10px;
+    border: 2px solid;
+    border-radius: .25rem;
+    margin: 10px;
+}

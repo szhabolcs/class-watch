@@ -9,14 +9,40 @@ const io = require("socket.io-client");
 let socket;
 let session;
 
-const {exec} = require('child_process');
-exec('gps | where {$_.MainWindowHandle -ne 0 } | select Description', {'shell': 'powershell.exe'}, (error, stdout, stderr) => {
-    //console.log(stdout.split("\n"));
-});
+function getStudentInfo (){
+    const {exec} = require('child_process');
+    exec('gps | where {$_.MainWindowHandle -ne 0 } | select Description', {'shell': 'powershell.exe'}, (error, stdout, stderr) => {
+        console.log(stdout.split("\n"));
+    });
+}
 
 function showModal(message) {
-    $(".modal-body").text(message);
-    $("#warning-modal").modal("show");
+    let $modal = $("#warning-modal");
+    $modal.find(".modal-body").text(message);
+    $modal.modal("show");
+}
+
+/**
+ * 
+ * @param {String} id The id of the student
+ */
+function fetchStudentInfo(id){
+    getStudentInfo();
+    let studentInfo;
+    //TODO: Send the server an app fetch request
+    return studentInfo;
+}
+
+/**
+ * This function shows a modal with the student activity
+ * @param {String} id The id of the student
+ * @param {String} name The name of the student
+ */
+function showStudentInfo(id, name){
+    let $modal = $("#student-modal");
+    $modal.modal("show");
+    $("#student-modal-label").text("Info about "+name);
+    let studentInfo = fetchStudentInfo();
 }
 
 /**
@@ -191,4 +217,10 @@ $("html").on("keydown", '#chat-input', (eventInfo) => {
     }
     return false;
   }
+});
+
+$("html").on("click", '.info-btn', (eventInfo) => {
+    let id = $(eventInfo.currentTarget).attr('id');
+    let name = $(eventInfo.currentTarget.parentElement).children(".student-name").text()
+    showStudentInfo(id,name);
 });
