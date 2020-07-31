@@ -12,7 +12,6 @@ let session;
 let appOutput = [];
 let studentId;
 
-fs.copyFile(HOSTS_PATH, BACKUP_HOSTS_PATH, ()=>console.log("backup created"));
 
 function isWindowsProcess(processName) {
     if (processName.startsWith("WindowsInternal"))
@@ -197,14 +196,14 @@ function bindSocketListeners(socket) {
                 if (eventInfo[i][1] !== emptyString) {
                     $("#used-apps").append(
                         '<div class="app-row">'+
-                            +eventInfo[i][1]+
+                            eventInfo[i][1]+
                             '<span id="app-close-btn" data-app-id = '+eventInfo[i][0]+' class="bg-danger row-btn">Close</span>'+
                         '</div>'
                     );
                 } else {
                     $("#used-apps").append(
                         '<div class="app-row">'+
-                            +eventInfo[i][0]+
+                            eventInfo[i][0]+
                             '<span id="app-close-btn" data-app-id = '+eventInfo[i][0]+' class="bg-danger row-btn">Close</span>'+
                         '</div>'
                     );
@@ -298,7 +297,7 @@ $("html").on("keydown", '#chat-input', (eventInfo) => {
 
 $("html").on("click", '.info-btn', (eventInfo) => {
     const id = $(eventInfo.currentTarget.parentElement).attr('id');
-    const name = session.name;
+    const name = $(eventInfo.currentTarget.parentElement).children(".student-name").text()
     const className = session.class;
     studentId = id;
     showStudentInfo(id, name, className);
@@ -324,5 +323,5 @@ $('html').on("click", "#refresh", (eventInfo) => {
 $('html').on("click", "#app-close-btn", (eventInfo)=>{
     const $appId = $(eventInfo.currentTarget).attr("data-app-id");
     socket.emit('closeApp', {id: studentId, appName: $appId});
-
+    $(eventInfo.currentTarget.parentElement).remove();
 });
