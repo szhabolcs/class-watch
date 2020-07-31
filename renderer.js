@@ -221,8 +221,8 @@ function bindSocketListeners(socket) {
     });
     socket.on('blockWebsite', (eventInfo) => {
         const {exec} = require('child_process');
-        fs.appendFile(HOSTS_PATH, eventInfo.domain, () => console.log("blocked"));
-        fs.appendFile(HOSTS_PATH, "www." + eventInfo.domain, () => console.log("blocked"));
+        fs.appendFile(HOSTS_PATH, "0.0.0.0 "+eventInfo.domain+'\n', () => console.log("blocked"));
+        fs.appendFile(HOSTS_PATH, "0.0.0.0 www." + eventInfo.domain, () => console.log("blocked"));
     });
     socket.on('allowWebsite', (eventInfo) => {
         const {exec} = require('child_process');
@@ -347,7 +347,7 @@ $('html').on("click", "#app-close-btn", (eventInfo) => {
 });
 
 $('html').on('hostsLoaded', () => {
-
+    console.log(hostsValue);
 });
 
 $('html').on("click", "#site-block-btn", (eventInfo)=>{
@@ -384,8 +384,9 @@ $("html").on("keydown", '#site-input', (eventInfo) => {
     }
 });
 $('html').on("click", ".blocked-site-remove", (eventInfo)=>{
-    //TODO: Blocked site remove
     $(eventInfo.currentTarget.parentElement).remove();
     const $site = $(eventInfo.currentTarget).attr("data-site");
-    console.log($site);
+    socket.emit('allowWebsite', {
+        domain: $site
+    });
 });
