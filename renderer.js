@@ -9,6 +9,7 @@ const io = require("socket.io-client");
 let socket;
 let session;
 let eventInfo = [];
+let studentId;
 
 function isWindowsProcess(processName) {
     switch (processName) {
@@ -278,11 +279,10 @@ $("html").on("keydown", '#chat-input', (eventInfo) => {
 });
 
 $("html").on("click", '.info-btn', (eventInfo) => {
-    /*let id = $(eventInfo.currentTarget).attr('id');
-    let name = $(eventInfo.currentTarget.parentElement).children(".student-name").text();*/
     const id = $(eventInfo.currentTarget.parentElement).attr('id');
     const name = session.name;
     const className = session.class;
+    studentId=id;
     showStudentInfo(id, name, className);
 });
 
@@ -294,3 +294,11 @@ $('html').on("appLoadFinished", (eventInfo) => {
     console.log(data);
     socket.emit('appInfoReceived', data);
 });
+
+$('html').on("click", "#refresh", (eventInfo)=>{
+
+    const id = studentId;
+    const name = session.name;
+    const className = session.class;
+    fetchStudentInfo(id, className);
+})
