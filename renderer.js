@@ -11,8 +11,9 @@ let socket;
 let session;
 let appOutput = [];
 let studentId;
+let hostsValue;
 
-fs.copyFile(HOSTS_PATH, BACKUP_HOSTS_PATH, (err)=>console.log(err));
+fs.copyFile(HOSTS_PATH, BACKUP_HOSTS_PATH, (err) => console.log(err));
 
 function isWindowsProcess(processName) {
     if (processName.startsWith("WindowsInternal"))
@@ -152,6 +153,7 @@ function bindSocketListeners(socket) {
     });
 
     socket.on('teacherLeft', () => {
+        fs.copyFile(BACKUP_HOSTS_PATH, HOSTS_PATH, (err) => {});
         $("body").load("main-menu.html", () => {
             showModal(MSG_TEACHER_LEFT);
         });
@@ -195,16 +197,16 @@ function bindSocketListeners(socket) {
             if (eventInfo[i][0] !== emptyString && !isWindowsProcess(eventInfo[i][0])) {
                 if (eventInfo[i][1] !== emptyString) {
                     $("#used-apps").append(
-                        '<div class="app-row">'+
-                            eventInfo[i][1]+
-                            '<span id="app-close-btn" data-app-id = '+eventInfo[i][0]+' class="bg-danger row-btn">Close</span>'+
+                        '<div class="app-row">' +
+                        eventInfo[i][1] +
+                        '<span id="app-close-btn" data-app-id = ' + eventInfo[i][0] + ' class="bg-danger row-btn">Close</span>' +
                         '</div>'
                     );
                 } else {
                     $("#used-apps").append(
-                        '<div class="app-row">'+
-                            eventInfo[i][0]+
-                            '<span id="app-close-btn" data-app-id = '+eventInfo[i][0]+' class="bg-danger row-btn">Close</span>'+
+                        '<div class="app-row">' +
+                        eventInfo[i][0] +
+                        '<span id="app-close-btn" data-app-id = ' + eventInfo[i][0] + ' class="bg-danger row-btn">Close</span>' +
                         '</div>'
                     );
                 }
@@ -216,6 +218,21 @@ function bindSocketListeners(socket) {
     socket.on('closeApp', (eventInfo) => {
         const {exec} = require('child_process');
         exec('taskkill /im ' + eventInfo.appName + '.exe', {'shell': 'powershell.exe'});
+    });
+    socket.on('blockWebsite', (eventInfo) => {
+        const {exec} = require('child_process');
+        fs.appendFile(HOSTS_PATH, eventInfo.domain, () => console.log("blocked"));
+        fs.appendFile(HOSTS_PATH, "www." + eventInfo.domain, () => console.log("blocked"));
+    });
+    socket.on('allowWebsite', (eventInfo) => {
+        const {exec} = require('child_process');
+        fs.readFile(HOSTS_PATH, 'utf-8', (err, data) => {
+            hostsValue = {
+                data: data,
+                website: eventInfo.domain
+            };
+            $('html').trigger('hostsLoaded');
+        });
     });
 }
 
@@ -258,11 +275,14 @@ $("html").on("click", "#create-class", (eventInfo) => {
 });
 
 $("html").on("click", "#leave-class", () => {
+
     showModal(MSG_LEAVE);
 });
 
 $("html").on("click", "#leave-class-approve-btn", () => {
+    fs.copyFile(BACKUP_HOSTS_PATH, HOSTS_PATH, (err) => {});
     $("body").load("main-menu.html");
+
     disconnect();
 });
 
@@ -320,15 +340,21 @@ $('html').on("click", "#refresh", (eventInfo) => {
     fetchStudentInfo(id, className);
 })
 
-$('html').on("click", "#app-close-btn", (eventInfo)=>{
+$('html').on("click", "#app-close-btn", (eventInfo) => {
     const $appId = $(eventInfo.currentTarget).attr("data-app-id");
     socket.emit('closeApp', {id: studentId, appName: $appId});
     $(eventInfo.currentTarget.parentElement).remove();
 });
 
+$('html').on('hostsLoaded', () => {
+
+});
+
 $('html').on("click", "#site-block-btn", (eventInfo)=>{
     let $site = $("#site-input");
-
+    socket.emit('blockWebsite', {
+       domain: $site.val()
+    });
     $("#blocked-sites-container").append(
         '<div class="site-row">'+
             $site.val()+
@@ -343,7 +369,9 @@ $("html").on("keydown", '#site-input', (eventInfo) => {
     if (eventInfo.which == 13) {
         eventInfo.preventDefault();
         let $site = $("#site-input");
-
+        socket.emit('blockWebsite', {
+            domain: $site.val()
+        });
         $("#blocked-sites-container").append(
             '<div class="site-row">'+
                 $site.val()+
