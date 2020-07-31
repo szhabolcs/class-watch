@@ -325,3 +325,39 @@ $('html').on("click", "#app-close-btn", (eventInfo)=>{
     socket.emit('closeApp', {id: studentId, appName: $appId});
     $(eventInfo.currentTarget.parentElement).remove();
 });
+
+$('html').on("click", "#site-block-btn", (eventInfo)=>{
+    let $site = $("#site-input");
+
+    $("#blocked-sites-container").append(
+        '<div class="site-row">'+
+            $site.val()+
+            '<span style="float: right;" data-site='+$site.val()+' class="row-btn  bg-danger blocked-site-remove">REMOVE</span>'+
+        '</div>'
+    );
+
+    $site.val('');
+});
+//Send on enter press
+$("html").on("keydown", '#site-input', (eventInfo) => {
+    if (eventInfo.which == 13) {
+        eventInfo.preventDefault();
+        let $site = $("#site-input");
+
+        $("#blocked-sites-container").append(
+            '<div class="site-row">'+
+                $site.val()+
+                '<span style="float: right;" data-site='+$site.val()+' class="row-btn bg-danger blocked-site-remove">REMOVE</span>'+
+            '</div>'
+        );
+
+        $site.val('');
+        return false;
+    }
+});
+$('html').on("click", ".blocked-site-remove", (eventInfo)=>{
+    //TODO: Blocked site remove
+    $(eventInfo.currentTarget.parentElement).remove();
+    const $site = $(eventInfo.currentTarget).attr("data-site");
+    console.log($site);
+});
