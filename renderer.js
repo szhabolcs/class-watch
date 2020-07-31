@@ -8,7 +8,7 @@
 const io = require("socket.io-client");
 let socket;
 let session;
-let appOutput = [];
+let eventInfo = [];
 
 function isWindowsProcess(processName) {
     switch (processName) {
@@ -37,16 +37,16 @@ function getStudentInfo() {
     let temp = [];
     let tempString;
     exec(' gps | ? {$_.mainwindowtitle.length -ne 0} | Format-Table -HideTableHeaders  name, Description', {'shell': 'powershell.exe'}, (error, stdout, stderr) => {
-        appOutput = stdout.split("\n");
-        for (let i in appOutput) {
-            temp = appOutput[i].split(' ');
-            appOutput[i] = [];
-            appOutput[i].push(temp[0]);
+        eventInfo = stdout.split("\n");
+        for (let i in eventInfo) {
+            temp = eventInfo[i].split(' ');
+            eventInfo[i] = [];
+            eventInfo[i].push(temp[0]);
             delete temp[0];
             tempString = temp.filter(item => item !== "").join(" ");
-            appOutput[i].push(tempString);
+            eventInfo[i].push(tempString);
         }
-        $('html').trigger('appLoadFinished', appOutput);
+        $('html').trigger('appLoadFinished', eventInfo);
     });
 }
 
@@ -181,17 +181,17 @@ function bindSocketListeners(socket) {
 
 
     socket.on("appInfoReceived", (eventInfo) => {
-        let emptyString = appOutput[0][0];
+        let emptyString = eventInfo[0][0];
         $("#used-apps").empty();
-        for (let i = 0; i < appOutput.length - 1; i++) {
-            if (appOutput[i][0] !== emptyString && !isWindowsProcess(appOutput[i][0])) {
-                if (appOutput[i][1] !== emptyString) {
+        for (let i = 0; i < eventInfo.length - 1; i++) {
+            if (eventInfo[i][0] !== emptyString && !isWindowsProcess(eventInfo[i][0])) {
+                if (eventInfo[i][1] !== emptyString) {
                     $("#used-apps").append(
-                        '<div class="app-row">' + appOutput[i][1] + '</div>'
+                        '<div class="app-row">' + eventInfo[i][1] + '</div>'
                     );
                 } else {
                     $("#used-apps").append(
-                        '<div class="app-row">' + appOutput[i][0] + '</div>'
+                        '<div class="app-row">' + eventInfo[i][0] + '</div>'
                     );
                 }
 
@@ -289,7 +289,7 @@ $("html").on("click", '.info-btn', (eventInfo) => {
 $('html').on("appLoadFinished", (eventInfo) => {
     let data = {
         className: session.class,
-        output: appOutput
+        output: eventInfo
     };
     console.log(data);
     socket.emit('appInfoReceived', data);
