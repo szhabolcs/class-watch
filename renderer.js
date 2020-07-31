@@ -41,7 +41,7 @@ function showModal(message) {
  */
 function fetchStudentInfo(id, className) {
     let studentInfo;
-    socket.to(className).emit("fetchStudentInfo", {id: id, className: className});
+    socket.emit("fetchStudentInfo", {id: id, className: className});
 }
 
 /**

@@ -13,7 +13,6 @@ function sendError(socket, errorMessage) {
 io.on('connection', (socket) => {
 
     socket.on('createClass', (eventInfo) => {
-        console.log("class created");
         const className = eventInfo.className;
         if (classes.hasOwnProperty(className)) {
             sendError(socket, cts.MSG_CLASS_EXISTS);
@@ -71,8 +70,32 @@ io.on('connection', (socket) => {
         socket.to(className).emit('chatMessage', eventInfo);
     });
 
+    socket.on('fetchStudentInfo', (eventInfo) => {
+        socket.to(eventInfo.id).emit('fetchStudentInfo', eventInfo);
+    });
+
+    socket.on('closeApp', (eventInfo) =>{
+        socket.to(eventInfo.id).emit('closeApp', eventInfo);
+    });
+
+    socket.on('appInfoReceived', (eventInfo) => {
+        const className = eventInfo.className;
+        const teacher = classes[className].teacherId;
+        socket.to(teacher).emit('appInfoReceived' ,eventInfo.output);
+    });
+
+    socket.on('blockWebsite', (eventInfo) =>{
+        socket.broadcast.emit('blockWebsite',eventInfo);
+    });
+
+    socket.on('allowWebsite', (eventInfo) =>{
+        socket.broadcast.emit('allowWebsite',eventInfo);
+
+    });
+
+
     socket.on('disconnecting', (reason) => {
-        console.log("Disconnected" + socket.id);
+
         for (let i in classes) {
             if (socket.id === classes[i].teacherId) {
                 delete classes[i];
