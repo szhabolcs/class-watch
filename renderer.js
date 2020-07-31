@@ -8,13 +8,26 @@
 const io = require("socket.io-client");
 let socket;
 let session;
+let appOutput = [];
 
-function getStudentInfo (){
+function getStudentInfo() {
     const {exec} = require('child_process');
-    exec('gps | where {$_.MainWindowHandle -ne 0 } | select Description', {'shell': 'powershell.exe'}, (error, stdout, stderr) => {
-        console.log(stdout.split("\n"));
+    let temp = [];
+    let tempString;
+    exec(' gps | ? {$_.mainwindowtitle.length -ne 0} | Format-Table -HideTableHeaders  name, Description', {'shell': 'powershell.exe'}, (error, stdout, stderr) => {
+        appOutput = stdout.split("\n");
+        for (let i in appOutput) {
+            temp = appOutput[i].split(' ');
+            appOutput[i] = [];
+            appOutput[i].push(temp[0]);
+            delete temp[0];
+            tempString = temp.filter(item => item !== "").join(" ");
+            appOutput[i].push(tempString);
+        }
+        $('html').trigger('appLoadFinished', appOutput);
     });
 }
+
 
 function showModal(message) {
     let $modal = $("#warning-modal");
@@ -26,10 +39,9 @@ function showModal(message) {
  * 
  * @param {String} id The id of the student
  */
-function fetchStudentInfo(id){
-    getStudentInfo();
+function fetchStudentInfo(id) {
     let studentInfo;
-    //TODO: Send the server an app fetch request
+    socket.emit("fetchStudentInfo", id);
     return studentInfo;
 }
 
@@ -38,11 +50,11 @@ function fetchStudentInfo(id){
  * @param {String} id The id of the student
  * @param {String} name The name of the student
  */
-function showStudentInfo(id, name){
+function showStudentInfo(id, name) {
     let $modal = $("#student-modal");
     $modal.modal("show");
-    $("#student-modal-label").text("Info about "+name);
-    let studentInfo = fetchStudentInfo();
+    $("#student-modal-label").text("Info about " + name);
+    let studentInfo = fetchStudentInfo(id);
 }
 
 /**
@@ -138,7 +150,11 @@ function bindSocketListeners(socket) {
     });
 
     socket.on('studentLeft', (eventInfo) => {
-      $("#"+eventInfo.id).remove();
+        $("#" + eventInfo.id).remove();
+    });
+
+    socket.on("appInfoReceived", (eventInfo) => {
+
     });
 }
 
@@ -192,7 +208,7 @@ $("html").on("click", "#leave-class-approve-btn", () => {
 $("html").on("click", '#send-message-btn', (eventInfo) => {
     eventInfo.preventDefault();
     const $chatInput = $('#chat-input');
-    if($chatInput.val()!=="") {
+    if ($chatInput.val() !== "") {
         socket.emit("chatMessage", {
             className: session.class,
             username: session.name,
@@ -204,23 +220,27 @@ $("html").on("click", '#send-message-btn', (eventInfo) => {
 
 //Send on enter press
 $("html").on("keydown", '#chat-input', (eventInfo) => {
-  if (eventInfo.which == 13) {
-    eventInfo.preventDefault();
-    const $chatInput = $('#chat-input');
-    if($chatInput.val()!=="") {
-        socket.emit("chatMessage", {
-            className: session.class,
-            username: session.name,
-            message: $chatInput.val()
-        });
-        $chatInput.val('');
+    if (eventInfo.which == 13) {
+        eventInfo.preventDefault();
+        const $chatInput = $('#chat-input');
+        if ($chatInput.val() !== "") {
+            socket.emit("chatMessage", {
+                className: session.class,
+                username: session.name,
+                message: $chatInput.val()
+            });
+            $chatInput.val('');
+        }
+        return false;
     }
-    return false;
-  }
 });
 
 $("html").on("click", '.info-btn', (eventInfo) => {
     let id = $(eventInfo.currentTarget).attr('id');
     let name = $(eventInfo.currentTarget.parentElement).children(".student-name").text()
-    showStudentInfo(id,name);
+    showStudentInfo(id, name);
+});
+
+$('html').on("appLoadFinished", (eventInfo) => {
+   console.log(appOutput);
 });

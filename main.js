@@ -2,6 +2,8 @@
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
 
+
+
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -18,6 +20,12 @@ function createWindow () {
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools()
+  var exec = require('child_process').exec;
+  exec('NET SESSION', function(err,so,se) {
+    console.log(se.length === 0 ? "admin" : "not admin");
+  });
+  
+
 }
 
 // This method will be called when Electron has finished
