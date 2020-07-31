@@ -188,11 +188,17 @@ function bindSocketListeners(socket) {
             if (eventInfo[i][0] !== emptyString && !isWindowsProcess(eventInfo[i][0])) {
                 if (eventInfo[i][1] !== emptyString) {
                     $("#used-apps").append(
-                        '<div class="app-row">' + eventInfo[i][1] + '</div>'
+                        '<div class="app-row">'+
+                            +eventInfo[i][1]+
+                            '<span id="app-close-btn" data-app-id = '+eventInfo[i][0]+' class="bg-danger row-btn">Close</span>'+
+                        '</div>'
                     );
                 } else {
                     $("#used-apps").append(
-                        '<div class="app-row">' + eventInfo[i][0] + '</div>'
+                        '<div class="app-row">'+
+                            +eventInfo[i][0]+
+                            '<span id="app-close-btn" data-app-id = '+eventInfo[i][0]+' class="bg-danger row-btn">Close</span>'+
+                        '</div>'
                     );
                 }
 
@@ -302,4 +308,7 @@ $('html').on("click", "#refresh", (eventInfo)=>{
     const className = session.class;
     fetchStudentInfo(id, className);
 })
-//wassup
+
+$('html').on("click", "#app-close-btn", (eventInfo)=>{
+    $appId = $(eventInfo.currentTarget).attr("data-app-id");
+});
