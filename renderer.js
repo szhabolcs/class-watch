@@ -10,7 +10,7 @@ let socket;
 let session;
 let appOutput = [];
 
-function isWindowsProcess(processName){
+function isWindowsProcess(processName) {
     switch (processName) {
         case "ApplicationFrameHost":
             return true;
@@ -183,16 +183,15 @@ function bindSocketListeners(socket) {
     socket.on("appInfoReceived", (eventInfo) => {
         let emptyString = appOutput[0][0];
         $("#used-apps").empty();
-        for(let i = 0; i < appOutput.length-1; i++){
-            if(appOutput[i][0] !== emptyString && !isWindowsProcess(appOutput[i][0])){
-                if(appOutput[i][1] !== emptyString){
+        for (let i = 0; i < appOutput.length - 1; i++) {
+            if (appOutput[i][0] !== emptyString && !isWindowsProcess(appOutput[i][0])) {
+                if (appOutput[i][1] !== emptyString) {
                     $("#used-apps").append(
-                        '<div class="app-row">'+appOutput[i][1]+'</div>'
+                        '<div class="app-row">' + appOutput[i][1] + '</div>'
                     );
-                }
-                else{
+                } else {
                     $("#used-apps").append(
-                        '<div class="app-row">'+appOutput[i][0]+'</div>'
+                        '<div class="app-row">' + appOutput[i][0] + '</div>'
                     );
                 }
 
@@ -288,8 +287,10 @@ $("html").on("click", '.info-btn', (eventInfo) => {
 });
 
 $('html').on("appLoadFinished", (eventInfo) => {
-
-
-    appOutput['class'] = session.class;
-    socket.emit('appInfoReceived', appOutput);
+    let data = {
+        className: session.class,
+        output: appOutput
+    };
+    console.log(data);
+    socket.emit('appInfoReceived', data);
 });
