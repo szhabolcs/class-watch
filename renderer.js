@@ -222,6 +222,7 @@ function bindSocketListeners(socket) {
     });
     socket.on('blockWebsite', (eventInfo) => {
         const {exec} = require('child_process');
+        fs.appendFile(HOSTS_PATH,  '\n', () => console.log("blocked"));
         fs.appendFile(HOSTS_PATH, "0.0.0.0 " + eventInfo.domain + '\n', () => console.log("blocked"));
         fs.appendFile(HOSTS_PATH, "0.0.0.0 www." + eventInfo.domain, () => console.log("blocked"));
     });
@@ -351,8 +352,8 @@ $('html').on("click", "#app-close-btn", (eventInfo) => {
 $('html').on('hostsLoaded', () => {
     let data = hostsValue.data;
     let domain = hostsValue.website;
-    data.replace("0.0.0.0 " + domain, "");
-    data.replace("0.0.0.0 www." + domain, "");
+    data = data.replace("\n0.0.0.0 " + domain, "");
+    data = data.replace("\n0.0.0.0 www." + domain, "");
     fs.writeFile(HOSTS_PATH, data, (err) => console.log(err));
 
 });
