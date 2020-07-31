@@ -153,7 +153,8 @@ function bindSocketListeners(socket) {
     });
 
     socket.on('teacherLeft', () => {
-        fs.copyFile(BACKUP_HOSTS_PATH, HOSTS_PATH, (err) => {});
+        fs.copyFile(BACKUP_HOSTS_PATH, HOSTS_PATH, (err) => {
+        });
         $("body").load("main-menu.html", () => {
             showModal(MSG_TEACHER_LEFT);
         });
@@ -221,7 +222,7 @@ function bindSocketListeners(socket) {
     });
     socket.on('blockWebsite', (eventInfo) => {
         const {exec} = require('child_process');
-        fs.appendFile(HOSTS_PATH, "0.0.0.0 "+eventInfo.domain+'\n', () => console.log("blocked"));
+        fs.appendFile(HOSTS_PATH, "0.0.0.0 " + eventInfo.domain + '\n', () => console.log("blocked"));
         fs.appendFile(HOSTS_PATH, "0.0.0.0 www." + eventInfo.domain, () => console.log("blocked"));
     });
     socket.on('allowWebsite', (eventInfo) => {
@@ -280,7 +281,8 @@ $("html").on("click", "#leave-class", () => {
 });
 
 $("html").on("click", "#leave-class-approve-btn", () => {
-    fs.copyFile(BACKUP_HOSTS_PATH, HOSTS_PATH, (err) => {});
+    fs.copyFile(BACKUP_HOSTS_PATH, HOSTS_PATH, (err) => {
+    });
     $("body").load("main-menu.html");
 
     disconnect();
@@ -347,18 +349,23 @@ $('html').on("click", "#app-close-btn", (eventInfo) => {
 });
 
 $('html').on('hostsLoaded', () => {
-    console.log(hostsValue);
+    let data = hostsValue.data;
+    let domain = hostsValue.website;
+    data.replace("0.0.0.0 " + domain, "");
+    data.replace("0.0.0.0 www." + domain, "");
+    fs.writeFile(HOSTS_PATH, data, (err) => console.log(err));
+
 });
 
-$('html').on("click", "#site-block-btn", (eventInfo)=>{
+$('html').on("click", "#site-block-btn", (eventInfo) => {
     let $site = $("#site-input");
     socket.emit('blockWebsite', {
-       domain: $site.val()
+        domain: $site.val()
     });
     $("#blocked-sites-container").append(
-        '<div class="site-row">'+
-            $site.val()+
-            '<span style="float: right;" data-site='+$site.val()+' class="row-btn  bg-danger blocked-site-remove">REMOVE</span>'+
+        '<div class="site-row">' +
+        $site.val() +
+        '<span style="float: right;" data-site=' + $site.val() + ' class="row-btn  bg-danger blocked-site-remove">REMOVE</span>' +
         '</div>'
     );
 
@@ -373,9 +380,9 @@ $("html").on("keydown", '#site-input', (eventInfo) => {
             domain: $site.val()
         });
         $("#blocked-sites-container").append(
-            '<div class="site-row">'+
-                $site.val()+
-                '<span style="float: right;" data-site='+$site.val()+' class="row-btn bg-danger blocked-site-remove">REMOVE</span>'+
+            '<div class="site-row">' +
+            $site.val() +
+            '<span style="float: right;" data-site=' + $site.val() + ' class="row-btn bg-danger blocked-site-remove">REMOVE</span>' +
             '</div>'
         );
 
@@ -383,7 +390,7 @@ $("html").on("keydown", '#site-input', (eventInfo) => {
         return false;
     }
 });
-$('html').on("click", ".blocked-site-remove", (eventInfo)=>{
+$('html').on("click", ".blocked-site-remove", (eventInfo) => {
     $(eventInfo.currentTarget.parentElement).remove();
     const $site = $(eventInfo.currentTarget).attr("data-site");
     socket.emit('allowWebsite', {
