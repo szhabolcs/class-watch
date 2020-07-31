@@ -12,6 +12,7 @@ let session;
 let appOutput = [];
 let studentId;
 
+fs.copyFile(HOSTS_PATH, BACKUP_HOSTS_PATH, (err)=>console.log(err));
 
 function isWindowsProcess(processName) {
     if (processName.startsWith("WindowsInternal"))
@@ -139,7 +140,6 @@ function bindSocketListeners(socket) {
 
     socket.on('createSuccess', (eventInfo) => {
         session.joined = true;
-        console.log("Class created!");
         $("body").load("teacher.html", () => {
             $("#name").text(eventInfo.name);
             $("#class-name").text(eventInfo.className);
@@ -214,7 +214,8 @@ function bindSocketListeners(socket) {
     });
 
     socket.on('closeApp', (eventInfo) => {
-        exec('taskkill /im' + eventInfo.appName + '.exe', {'shell': 'powershell.exe'});
+        const {exec} = require('child_process');
+        exec('taskkill /im ' + eventInfo.appName + '.exe', {'shell': 'powershell.exe'});
     });
 }
 
@@ -308,7 +309,6 @@ $('html').on("appLoadFinished", (eventInfo) => {
         className: session.class,
         output: appOutput
     };
-    console.log(data);
     socket.emit('appInfoReceived', data);
 });
 
