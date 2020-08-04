@@ -112,7 +112,7 @@ function scrollChatIntoView() {
  * Connects to the server
  */
 function connect() {
-    socket = io("http://gpcnet.go.ro:3000/");
+    socket = io("https://class-watch-server.herokuapp.com");
     bindSocketListeners(socket);
     return socket;
 }

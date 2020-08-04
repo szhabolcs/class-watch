@@ -11,7 +11,7 @@ function sendError(socket, errorMessage) {
 }
 
 io.on('connection', (socket) => {
-
+    io.origins("*:*");
     socket.on('createClass', (eventInfo) => {
         const className = eventInfo.className;
         if (classes.hasOwnProperty(className)) {
