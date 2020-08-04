@@ -1,7 +1,7 @@
 //import * as cts from './constants';
 //import * as io from 'socket.io';
 const cts = require('./constants');
-const io = require('socket.io')(3000);
+const io = require('socket.io')(process.env.port || 3000);
 const utils = require('./utils');
 
 let classes = [];
